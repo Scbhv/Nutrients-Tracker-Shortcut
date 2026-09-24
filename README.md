@@ -1,5 +1,9 @@
 **Nutrition Tracker**
 
+
+*https://routinehub.co/shortcut/21541/*
+
+
 Your nutrition tracker built directly into Apple Shortcuts and Apple Health.
 
 Nutrition Tracker is an Apple Shortcut designed to make detailed nutrition tracking in Apple Health faster, reusable, and independent of a single data source.
