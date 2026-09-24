@@ -1,4 +1,4 @@
-Nutrition Tracker
+**Nutrition Tracker**
 
 Your nutrition tracker built directly into Apple Shortcuts and Apple Health.
 
