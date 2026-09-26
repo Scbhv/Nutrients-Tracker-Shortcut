@@ -172,8 +172,8 @@ Shortcut Input	Receive compatible JSON from another Shortcut
 
 All of these methods eventually produce the same standardized nutrition dictionary.
 
-<!-- SCREENSHOT 01: Main input menu -->
-<!-- ![Nutrition Tracker Main Menu](docs/images/01-main-menu.png) -->
+SCREENSHOT 01: Main input menu
+![Nutrition Tracker Main Menu](docs/images/01-main-menu.jpeg)
 
 ⸻
 
