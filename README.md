@@ -470,30 +470,24 @@ or:
 
 proteins_100g
 
-Fiber may appear as:
+or:
 
-fiber_100g
-fibre_100g
-dietary-fiber_100g
+Eiweiß_100g
+
+or
 
 Vitamin B1 might appear as:
 
-vitamin-b1_100g
-thiamine_100g
+*vitamin-b1_100g
+thiamine_100g*
 
 Instead of requiring every source to use exactly the same name, Nutrition Tracker can recognize multiple aliases and map them to the nutrient used internally.
 
-Conceptually:
+it works like this:
 
-protein_100g ──────┐
-                   ├──► Protein
-proteins_100g ─────┘
+*Eiweiß_100g* or *proteins_100g* ──► *Protein_100g*
 
-and:
 
-fiber_100g ─────────┐
-fibre_100g ─────────┼──► Fiber
-dietary-fiber_100g ─┘
 
 This makes Nutrition Tracker more compatible with:
 
@@ -553,10 +547,7 @@ A larger food object may look like this:
   "cholesterol_100g": 0,
   "caffeine_100g": 0,
   "water_100g": 0,
-  "creatine_100g": 0,
-  "valine_100g": 0,
-  "isoleucine_100g": 0,
-  "leucine_100g": 0
+  "creatine_100g": 0
 }
 
 The complete internal structure can contain additional fields and aliases beyond this example.
@@ -599,7 +590,7 @@ Energy uses:
   "energy-kcal_100g": 361
 }
 
-Metadata does not necessarily use the _100g suffix:
+Metadata does not necessarily use the _100g suffix - though those are optional for the shortcut:
 
 {
   "food_name": "Oatmeal",
@@ -610,7 +601,7 @@ Metadata does not necessarily use the _100g suffix:
 
 9. Local Food Database
 
-Every saved food becomes part of a personal food database.
+Every saved food becomes part of a personal food database, that is privately and safely stored in your own files stored.
 
 The first time you add a food, you may need to:
 
@@ -655,16 +646,16 @@ After the food has been loaded, Nutrition Tracker asks for the amount actually c
 
 Example:
 
-How many grams did you eat?
-250 g
+*How many grams did you eat?
+250 g*
 
 Nutrition Tracker calculates a serving factor:
 
-Serving Factor = Serving Size ÷ 100
+*Serving Factor = Serving Size ÷ 100
 
 For 250 g:
 
-250 ÷ 100 = 2.5
+250 ÷ 100 = 2.5*
 
 That factor is then applied to the available nutrition values.
 
