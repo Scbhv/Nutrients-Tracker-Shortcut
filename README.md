@@ -172,7 +172,7 @@ Shortcut Input	Receive compatible JSON from another Shortcut
 
 All of these methods eventually produce the same standardized nutrition dictionary.
 
-SCREENSHOT 01: Main input menu
+
 ![Nutrition Tracker Main Menu](docs/images/01-main-menu.jpeg)
 
 ⸻
@@ -213,7 +213,7 @@ Not every Open Food Facts product contains every nutrient.
 
 Nutrition Tracker therefore processes whatever information is available.
 
-<!-- SCREENSHOT 02: Barcode scanner -->
+
 <!-- ![Barcode Scanner](docs/images/02-barcode-scanner.png) -->
 
 ⸻
@@ -266,10 +266,14 @@ This is useful when:
 * you created the food yourself,
 * or you simply want full control over the values.
 
-<!-- SCREENSHOT 03: Manual Input -->
-<!-- ![Manual Nutrition Input](docs/images/03-manual-input.png) -->
 
-For example:
+![Manual Nutrition Input](docs/images/03-manual-input.jpeg)
+
+
+
+It will ask for every singe nutrient one after another. Its  grouped by measurement and after each group you will be ask if you want to skip the next one so you can skip the mg and/or µg nutrients.
+
+The final .json will look something like this:
 
 {
   "food_name": "Homemade Granola",
@@ -301,8 +305,8 @@ Examples include:
 * Products without complete nutrition labels
 * Unpackaged food
 
-<!-- SCREENSHOT 04: AI Input -->
-<!-- ![AI Nutrition Analysis](docs/images/04-ai-analysis.png) -->
+
+<!-- ![AI Nutrition Analysis](docs/images/04-ai-analysis.jpeg) -->
 
 The AI is instructed to return structured JSON rather than normal conversational text.
 
@@ -444,8 +448,11 @@ When that food is selected later, Nutrition Tracker can skip:
 
 and move directly to the serving-size calculation.
 
-<!-- SCREENSHOT 05: Saved foods -->
-<!-- ![Saved Foods](docs/images/05-saved-foods.png) -->
+![Saved Foods](docs/images/05-saved-foods.jpeg)
+
+ the backend (the folder) will look like this 
+
+![Saved Foods](docs/images/05-5-saved-foods.jpeg)
 
 ⸻
 
@@ -661,8 +668,8 @@ For 250 g:
 
 That factor is then applied to the available nutrition values.
 
-<!-- SCREENSHOT 06: Serving size -->
-<!-- ![Serving Size](docs/images/06-serving-size.png) -->
+
+![Serving Size](docs/images/06-serving-size.jpeg)
 
 ⸻
 
@@ -708,6 +715,10 @@ Protein:
 
 The same stored food can therefore be used for any serving size.
 
+The shortcut will then ask if you want to repeat the process incase you forgot something 
+
+
+![Apple Health Nutrition Data](docs/images/06-6-repeat?.jpeg)
 ⸻
 
 12. Apple Health
@@ -728,8 +739,8 @@ Calculated Nutrition JSON
           ├── Calcium ─────► Apple Health
           ├── Magnesium ───► Apple Health
           └── ...
-<!-- SCREENSHOT 07: Apple Health result -->
-<!-- ![Apple Health Nutrition Data](docs/images/07-apple-health.png) -->
+
+![Apple Health Nutrition Data](docs/images/07-apple-health.jpeg)
 
 This also makes the data available to compatible apps that read nutrition information from Apple Health, subject to the permissions the user has granted those apps.
 
