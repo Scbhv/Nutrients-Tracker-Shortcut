@@ -205,14 +205,11 @@ Values that are unavailable can either be omitted during processing or represent
 
 The AI mode is intended for food where reliable structured nutrition data is not immediately available.
 
-Examples include:
+like:
 
 * Restaurant meals
 * Homemade meals
 * Mixed meals
-* Food shown in a photo
-* Products without complete nutrition labels
-* Unpackaged food
 
 
 <!-- ![AI Nutrition Analysis](docs/images/04-ai-analysis.jpeg) -->
@@ -236,17 +233,13 @@ For example:
 
 Because the response follows the same format used by the rest of Nutrition Tracker, it can immediately enter the normal processing workflow.
 
-The AI does not need to know anything about Apple Health.
+The AI does not need to know anything about Apple Health, so you're information are still safely stored.
 
 It only has to produce compatible nutrition JSON.
 
 Nutrition Tracker handles everything after that.
 
-⸻
 
-AI Photo Analysis
-
-A possible workflow is:
 
 Take Photo
      ↓
@@ -268,58 +261,11 @@ AI-generated values should always be treated as estimates when no verified data 
 
 ⸻
 
-5. Shortcut Input
 
-Nutrition Tracker can also act as a central nutrition-processing Shortcut for other Shortcuts.
-
-Instead of every Shortcut implementing its own:
-
-* nutrition calculations,
-* serving-size calculations,
-* JSON handling,
-* nutrient mapping,
-* and Apple Health logging,
-
-another Shortcut can generate Nutrition Tracker-compatible JSON and pass it to Nutrition Tracker.
-
-For example:
-
-Custom Food Shortcut
-        ↓
-Take Photo
-        ↓
-Run AI
-        ↓
-Create Nutrition JSON
-        ↓
-Run Nutrition Tracker
-        ↓
-Calculate Serving
-        ↓
-Apple Health
-
-This allows Nutrition Tracker to act as a reusable backend.
-
-Possible external workflows include:
-
-Nutrition Label OCR
-        ↓
-Nutrition Tracker
-Recipe Calculator
-        ↓
-Nutrition Tracker
-Local AI Model
-        ↓
-Nutrition Tracker
-Custom API
-        ↓
-Nutrition Tracker
-
-As long as the data can be converted to the expected JSON structure, the remaining Nutrition Tracker workflow can stay the same.
 
 ⸻
 
-6. Saved JSON
+5. Saved JSON
 
 Foods do not need to be downloaded, generated, or entered every time.
 
@@ -327,7 +273,7 @@ Once a food has been processed, its nutrition profile can be stored as a .json f
 
 For example:
 
-Nutrition Tracker/
+Nutritients database folder/
 │
 ├── Banana.json
 ├── Oatmeal.json
@@ -336,7 +282,7 @@ Nutrition Tracker/
 ├── Milk.json
 └── Pasta.json
 
-A saved file might contain:
+A saved file for bananas could  contain:
 
 *{
   "food_name": "Banana",
@@ -365,7 +311,7 @@ and move directly to the serving-size calculation.
 
 ⸻
 
-7. Data Normalization
+6. Data Normalization
 
 One of the most important parts of Nutrition Tracker is nutrient normalization.
 
@@ -396,23 +342,22 @@ it works like this:
 
 *Eiweiß_100g* or *proteins_100g* ──► *Protein_100g*
 
-
+Normalisation happens on multiple points inside of the shorcut for example after the barcode scan or just before the apple health log.
 
 This makes Nutrition Tracker more compatible with:
 
-* Open Food Facts
+* Open Food Facts API
 * AI-generated JSON
 * Manually generated JSON
-* External Shortcuts
-* Future APIs
+* and much more
 
 ⸻
 
-8. Nutrition JSON Format
+7. Nutrition JSON Format
 
 The JSON dictionary is the central interface of Nutrition Tracker.
 
-A larger food object may look like this:
+An example empthy food json may look like this:
 
 {
   "food_name": "",
@@ -477,9 +422,6 @@ These can include values such as:
 
 The schema is intentionally broader than the values currently written to Apple Health.
 
-⸻
-
-Naming Convention
 
 Most nutrient keys follow:
 
@@ -499,7 +441,7 @@ Energy uses:
   "energy-kcal_100g": 361
 }*
 
-Metadata does not necessarily use the _100g suffix - though those are optional for the shortcut:
+But Metadata does not necessarily use the _100g suffix - though those are optional for the shortcut:
 
 *{
   "food_name": "Oatmeal",
@@ -508,14 +450,14 @@ Metadata does not necessarily use the _100g suffix - though those are optional f
 
 ⸻
 
-9. Local Food Database
+8. Local Food Database (backend)
 
-Every saved food becomes part of a personal food database, that is privately and safely stored in your own files stored.
+Every saved food becomes part of your personal food database, that is privately and safely stored in your own files.
 
-The first time you add a food, you may need to:
+The first time you add a food, you have to:
 
 * scan it,
-* enter it,
+* manually enter it,
 * or analyze it.
 
 Afterwards, Nutrition Tracker can reuse the stored JSON.
@@ -523,7 +465,7 @@ Afterwards, Nutrition Tracker can reuse the stored JSON.
 Example:
 
 First time:
-Barcode
+*Barcode
    ↓
 Open Food Facts
    ↓
@@ -531,23 +473,25 @@ Normalize
    ↓
 Save Oatmeal.json
    ↓
-Track
+Track*
 
-Later:
+but Later:
 
-Saved JSON
+*Saved JSON
    ↓
 Oatmeal.json
    ↓
 Serving Size
    ↓
-Track
+Track*
 
 This reduces repeated API requests and makes frequently eaten foods significantly faster to log.
 
+
+pro tipp: you can select multiple entries/foods now and they get run one after another.
 ⸻
 
-10. Serving Size
+9. Serving Size
 
 Nutrition profiles are stored relative to 100 g.
 
@@ -570,12 +514,19 @@ That factor is then applied to the available nutrition values.
 
 
 ![Serving Size](docs/images/06-serving-size.jpeg)
-
+ if you have supplements that are consumed in relatively tiny amounts, you should still input the normal serving size for those instead of scaling them up to 100g, 
+but you have to enter 100g when you want to track them so it gets correctly added.
 ⸻
 
-11. Nutrient Calculation
+10. how to caluculate the nutritions
 
-Suppose a food contains:
+The general formula is:
+
+Actual Nutrient =
+*Nutrient per 100 g × (Serving Size ÷ 100)*
+
+
+So Suppose a food contains:
 
 *Protein = 14 g / 100 g*
 
@@ -583,42 +534,22 @@ and the serving is:
 
 *250 g*
 
-Nutrition Tracker calculates:
+The Nutrition Tracker then calculates:
 
-*14 × 2.5 = 35 g*
+*14 × (250 ÷ 100) = 35 g*
 
-The general formula is:
 
-Actual Nutrient =
-*Nutrient per 100 g × (Serving Size ÷ 100)*
+It then repeats that step for every given nutrient for ONE food the shortcut 
+performs a way to complicated if/else chain to match it with the corresponding 
+apple health nutrient (again with a normalisation)- but more to that later...
 
-For this example:
 
-Energy:
-*361 × 2.5
-= 902.5 kcal*
-Fat:
-*6.7 × 2.5
-= 16.75 g*
-Carbohydrates:
-*56 × 2.5
-= 140 g*
-Sugars:
-*1.2 × 2.5
-= 3 g*
-Fiber:
-*11 × 2.5
-= 27.5 g*
-Protein:
-*14 × 2.5
-= 35 g*
-
-After running through all elected foods the shortcut will then ask if you want to repeat the process incase you forgot something 
+After running through all elected foods the shortcut will then ask if you want to repeat the process incase you forgot something.
 
 ![Apple Health Nutrition Data](docs/images/06-6-repeat?.jpeg)
 ⸻
 
-12. Apple Health
+10. Apple Health
 
 After the serving values have been calculated, compatible nutrients are passed to Apple Health.
 
@@ -643,9 +574,9 @@ This also makes the data available to compatible apps that read nutrition inform
 
 ⸻
 
-13. Nutrients
+11. Nutrients
 
-Nutrition Tracker’s data structure can contain a large number of nutritional values.
+Nutrition Tracker’s json data structure can contain a large number of nutritional values.
 
 Macronutrients
 
@@ -731,24 +662,7 @@ Amino Acids and Sports Nutrition
 
 ⸻
 
-14. Nutrients Without a Direct Apple Health Mapping
-
-
-Other stored information like *Amino Acids* may not have a direct Apple Health nutrition type yet.
-
-This does not mean the data is useless.Values such as:
-
-{
-  "leucine_100g": 0,
-  "isoleucine_100g": 0,
-  "valine_100g": 0
-}
-
-can remain available for future features even if they are not written to Apple Health.
-
-⸻
-
-15. Why JSON?
+12. Why JSON?
 
 JSON is used because it provides several important advantages.
 
@@ -764,64 +678,10 @@ Other App ───┘
 
 ⸻
 
-Offline Usage
+**Offline Usage**
 
-Saved JSON files do not require a new API or AI request.
+**Saved JSON files do not require a new API or AI request.**
 
-⸻
-
-Expandability
-
-A new nutrient can be added without rebuilding the complete data model.
-
-For example:
-
-{
-  "creatine_100g": 0
-}
-
-or:
-
-{
-  "leucine_100g": 0
-}
-
-⸻
-
-Compatibility
-
-JSON can easily be produced and processed by:
-
-* Apple Shortcuts
-* Cherri
-* JavaScript
-* Python
-* APIs
-* AI models
-* Servers
-* Other automation systems
-
-⸻
-
-Reusability
-
-A food only needs to be defined once.
-
-After that, the same file can be used for:
-
-50 g
-100 g
-150 g
-234 g
-250 g
-500 g
-523 g
-
-without changing the original nutritional profile.
-
-⸻
-
-16. Offline Usage
 
 One of the main advantages of local food storage is that already saved foods can continue to work without an internet connection.
 
@@ -857,11 +717,45 @@ Offline mode
                 ▼
           Apple Health
 
-An internet connection is therefore only required for features that actually depend on an online service.
+An internet connection is therefore only required for AI or barcode use
+ *(assuming that your standard shortcuts folder is either downloaded or on your device)*
+⸻
+
+Compatibility
+
+JSON can easily be produced and processed by:
+
+* Apple Shortcuts
+* Cherri
+* JavaScript
+* Python
+* APIs
+* AI models
+* Servers
+* Other automation systems
 
 ⸻
 
-17. Privacy
+Reusability
+
+A food only needs to be defined once.
+
+After that, the same file can be used for:
+
+50 g
+100 g
+150 g
+234.5 g
+250 g
+500 g
+523 g
+ 
+or any number between 0 and infinity, 
+without changing the original nutritional profile.
+
+⸻
+
+13. Privacy
 
 Nutrition Tracker itself is built using Apple Shortcuts, but privacy depends on which input method is used.
 
@@ -912,7 +806,7 @@ Health permissions remain under the user’s control.
 
 ⸻
 
-18. Installation
+**14. Installation**
 
 Requirements
 
@@ -950,7 +844,7 @@ Then:
 
 ⸻
 
-19. Permissions
+15. Permissions
 
 Depending on the features used, Nutrition Tracker may request access to:
 
@@ -965,7 +859,7 @@ You remain in control of which permissions are granted.
 
 ⸻
 
-20. Using Another AI Service
+16. Using Another AI Service
 
 ChatGPT is optional.
 
@@ -1003,7 +897,7 @@ just replace the ChatGPT action inside of the shortcut and make sure all the pre
 
 ⸻
 
-21. Troubleshooting
+17. Troubleshooting
 
 Food is not found by barcode
 
@@ -1072,7 +966,77 @@ If a saved food contains incorrect data, update or replace the JSON instead of r
 
 ⸻
 
-22. Limitations
+
+18. Feedback
+
+If you find a bug or have an idea for a new feature, feel free to:
+
+* Open a GitHub Issue
+* Leave a comment
+* Submit a feature request
+* Contact me through one of my pinned networks
+
+Useful information for bug reports includes:
+
+Nutrition Tracker version:
+Device:
+iOS / iPadOS version:
+Input method:
+Barcode / Manual / AI / Saved JSON / Shortcut Input
+Expected result:
+Actual result:
+Screenshot:
+
+Please avoid publishing private Apple Health information in public bug reports.
+
+⸻
+
+19. Credits
+
+Nutrition Tracker was created using:
+
+* Apple Shortcuts
+* Apple Health
+* Open Food Facts
+* JSON
+* Optional AI integration
+
+
+*Attentive raders might have noticed that I used Chat GPT for big parts of the README - I'm sorry for that, but I was too lazy to type such a long text. If Chat GPT made any mistakes let me know too*
+
+
+Creator
+
+* GitHub: Scbhv
+* RoutineHub: @simon0907
+* Reddit: LongjumpingTomato946
+* Buy Me a Coffee: simon0907
+
+Older RoutineHub releases may also be associated with:
+
+* Sionic
+
+Add your preferred profile links here when publishing the repository.
+
+⸻
+
+20. Disclaimer
+
+Nutrition Tracker is provided as a nutrition tracking and automation tool.
+
+Nutrition information obtained from:
+
+* AI,
+* Open Food Facts,
+* third-party databases,
+* user-entered data,
+
+may be incomplete or inaccurate.
+
+For packaged foods, the manufacturer’s current nutrition label should generally be preferred when accurate nutritional information is important.
+
+Nutrition Tracker is not a medical device and is not intended to diagnose, treat, prevent, or manage medical conditions.
+
 
 AI Is an Estimate
 
@@ -1107,83 +1071,7 @@ Some values are intentionally preserved even when Apple Health cannot currently 
 
 ⸻
 
-Nutrition Tracker Is Not a Medical Device
-
-It is intended for nutrition tracking and automation, not diagnosis or medical decision-making.
-
-⸻
-
-23. Feedback
-
-If you find a bug or have an idea for a new feature, feel free to:
-
-* Open a GitHub Issue
-* Leave a comment
-* Submit a feature request
-* Contact me through one of my pinned networks
-
-Useful information for bug reports includes:
-
-Nutrition Tracker version:
-Device:
-iOS / iPadOS version:
-Input method:
-Barcode / Manual / AI / Saved JSON / Shortcut Input
-Expected result:
-Actual result:
-Screenshot:
-
-Please avoid publishing private Apple Health information in public bug reports.
-
-⸻
-
-24. Credits
-
-Nutrition Tracker was created using:
-
-* Apple Shortcuts
-* Apple Health
-* Open Food Facts
-* JSON
-* Optional AI integration
-
-
-*Attentive raders might have noticed that I used Chat GPT for big parts of the README - I'm sorry for that, but I was too lazy to type such a long text. If Chat GPT made any mistakes let me know too*
-
-
-Creator
-
-* GitHub: Scbhv
-* RoutineHub: @simon0907
-* Reddit: LongjumpingTomato946
-* Buy Me a Coffee: simon0907
-
-Older RoutineHub releases may also be associated with:
-
-* Sionic
-
-Add your preferred profile links here when publishing the repository.
-
-⸻
-
-25. Disclaimer
-
-Nutrition Tracker is provided as a nutrition tracking and automation tool.
-
-Nutrition information obtained from:
-
-* AI,
-* Open Food Facts,
-* third-party databases,
-* user-entered data,
-
-may be incomplete or inaccurate.
-
-For packaged foods, the manufacturer’s current nutrition label should generally be preferred when accurate nutritional information is important.
-
-Nutrition Tracker is not a medical device and is not intended to diagnose, treat, prevent, or manage medical conditions.
-
-
+g and automation, not diagnosis or medical decision-making.
 ⸻
 
 Thanks for using Nutrition Tracker!
