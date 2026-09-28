@@ -10,16 +10,16 @@ Nutrition Tracker is an Apple Shortcut designed to make detailed nutrition track
 
 
 
-*This shortcut works best with two my shorcuts:
+*This shortcut works best with two my shorcuts:*
 
 https://routinehub.co/shortcut/24903/
 
-and 
+*and*
 
 
 https://routinehub.co/shortcut/26329/
 
-check them out README to them might drop soon too.*
+*check them out. README to them might drop soon too.*
 
 
 Food can currently be added using:
