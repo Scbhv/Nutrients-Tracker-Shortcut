@@ -1016,7 +1016,7 @@ Older RoutineHub releases may also be associated with:
 
 * Sionic
 
-Add your preferred profile links here when publishing the repository.
+
 
 ⸻
 
