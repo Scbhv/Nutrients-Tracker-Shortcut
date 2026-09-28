@@ -841,7 +841,8 @@ Then:
 7. Enter the amount consumed.
 8. Allow Nutrition Tracker to save the supported values to Apple Health.
 
-
+the search will always search for new updates every time you run it, so you might wanna allow 
+it to acces another api
 ⸻
 
 15. Permissions
@@ -893,8 +894,6 @@ Possible AI sources include:
 * A custom server
 * A separate AI Shortcut
 just replace the ChatGPT action inside of the shortcut and make sure all the previously connected variables are reconnected 
-⸻
-
 ⸻
 
 17. Troubleshooting
@@ -966,7 +965,6 @@ If a saved food contains incorrect data, update or replace the JSON instead of r
 
 ⸻
 
-
 18. Feedback
 
 If you find a bug or have an idea for a new feature, feel free to:
@@ -1001,6 +999,9 @@ Nutrition Tracker was created using:
 * JSON
 * Optional AI integration
 
+
+the whole update system is built by mikebeas so thank you for that one
+https://www.icloud.com/shortcuts/57627cf3c77e43f18ae2f3cd5266ae4a
 
 *Attentive raders might have noticed that I used Chat GPT for big parts of the README - I'm sorry for that, but I was too lazy to type such a long text. If Chat GPT made any mistakes let me know too*
 
