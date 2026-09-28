@@ -8,6 +8,20 @@ Your nutrition tracker is built directly into Apple Shortcuts and Apple Health.
 
 Nutrition Tracker is an Apple Shortcut designed to make detailed nutrition tracking in Apple Health faster, reusable, and independent of a single data source.
 
+
+
+**this shortcut works best with two my shorcuts:
+
+https://routinehub.co/shortcut/24903/
+
+and 
+
+
+https://routinehub.co/shortcut/26329/
+
+check them out README to them might drop soon too**
+
+
 Food can currently be added using:
 
 * 📷 Barcode Scan
