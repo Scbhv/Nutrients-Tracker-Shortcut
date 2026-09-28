@@ -14,54 +14,6 @@ Food can currently be added using:
 * ✍️ Manual Input
 * 🤖 AI
 * 💾 Saved JSON files
-* 🔗 JSON passed from another Shortcut
-
-No matter where the nutritional information comes from, Nutrition Tracker converts it into the same internal JSON structure.
-
-From that point onward, every input method uses the same workflow:
-
-Normalize → Save → Select serving size → Calculate nutrients → Log to Apple Health
-
-This standardized JSON format is the core of Nutrition Tracker.
-
-⸻
-
-Table of Contents
-
-* How Nutrition Tracker Works
-* Architecture
-* 1. Choosing an Input Method
-* 2. Barcode Scan
-* 3. Manual Input
-* 4. AI Input
-* 5. Shortcut Input
-* 6. Saved JSON
-* 7. Data Normalization
-* 8. Nutrition JSON Format
-* 9. Local Food Database
-* 10. Serving Size
-* 11. Nutrient Calculation
-* 12. Apple Health
-* 13. Nutrients
-* 14. Nutrients Without a Direct Apple Health Mapping
-* 15. Why JSON?
-* 16. Offline Usage
-* 17. Privacy
-* 18. Installation
-* 19. Permissions
-* 20. Screenshots
-* 21. Example Workflow
-* 22. Using Another AI Service
-* 23. Extending Nutrition Tracker
-* 24. Troubleshooting
-* 25. Limitations
-* 26. Feedback
-* 27. Credits
-* 28. Disclaimer
-
-⸻
-
-How Nutrition Tracker Works
 
 Nutrition Tracker is built around one important principle:
 
@@ -71,27 +23,6 @@ Instead of creating a completely different Apple Health workflow for barcode sca
 
 That dictionary is then used by the rest of the Shortcut.
 
-flowchart TD
-    A[Nutrition Tracker] --> B{Choose Input Method}
-    B --> C[Barcode Scan]
-    B --> D[Manual Input]
-    B --> E[AI]
-    B --> F[Saved JSON]
-    B --> G[Shortcut Input]
-    C --> H[Raw Nutrition Data]
-    D --> H
-    E --> H
-    F --> H
-    G --> H
-    H --> I[Normalize Nutrient Names]
-    I --> J[Standard Nutrition JSON]
-    J --> K[Save Food]
-    J --> L[Enter Serving Size]
-    K --> L
-    L --> M[Serving Size ÷ 100]
-    M --> N[Calculate Every Nutrient]
-    N --> O[Map Supported Nutrients]
-    O --> P[Apple Health]
 
 The architecture can therefore be simplified to five major stages:
 
@@ -105,11 +36,7 @@ The architecture can therefore be simplified to five major stages:
       ↓
 5. APPLE HEALTH
 
-⸻
-
-Architecture
-
-Nutrition Tracker separates where the nutrition data comes from from what happens with the data afterwards.
+...or more detailed like this:
 
              ┌─────────────────────┐
              │  Nutrition Tracker  │
@@ -153,13 +80,11 @@ Nutrition Tracker separates where the nutrition data comes from from what happen
                                     ▼
                               Apple Health
 
-Because the later stages do not care where the data originally came from, additional input methods can be added without rebuilding the entire Shortcut.
-
 ⸻
 
 1. Choosing an Input Method
 
-When Nutrition Tracker starts, you choose how the food should be loaded.
+When you start Nutrition Tracker, you choose how the food should be loaded.
 
 The main options are:
 
@@ -168,7 +93,6 @@ Barcode Scan	Retrieve packaged food from Open Food Facts
 Manual Input	Enter nutrition information yourself
 AI	Estimate or extract nutrition information using AI
 Saved JSON	Load a food that was previously saved
-Shortcut Input	Receive compatible JSON from another Shortcut
 
 All of these methods eventually produce the same standardized nutrition dictionary.
 
@@ -208,7 +132,7 @@ The nutriments dictionary can contain values such as:
 * Vitamins
 * and many other available nutrients
 
-Not every Open Food Facts product contains every nutrient.
+Not every Open Food Facts product contains every nutrient and not every food is available in the library. 
 
 Nutrition Tracker therefore processes whatever information is available.
 
