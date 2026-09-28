@@ -38,46 +38,39 @@ The architecture can therefore be simplified to five major stages:
 
 ...or more detailed like this:
 
-             ┌─────────────────────┐
-             │  Nutrition Tracker  │
-             └──────────┬──────────┘
-                        │
+             ┌────────────────────┐
+             │  Nutrition Tracker │
+             └─────────┬──────────┘
+                       │
                         ▼
               Choose Input Method
                         │
-       ┌────────────────┼────────────────┐
-       │                │                │
-       ▼                ▼                ▼
-    Barcode           Manual             AI
-       │                │                │
-       │                │                │
-       └────────┬───────┴────────┬───────┘
-                │                │
-                ▼                ▼
-          Saved JSON       Shortcut Input
-                │                │
-                └────────┬───────┘
-                         │
-                         ▼
+       ┌────────────────┼────────────────┐───────────────┐       
+    Barcode           Manual             AI         Saved JSON
+       │                │                │               |
+       │                │                │               |
+       └────────–───────┴────────-───────┘─–─────────────┘
+                        │
+                        ▼
                 Raw Nutrition Data
-                         │
-                         ▼
+                        │
+                        ▼
                      Formatting
-                         │
-                         ▼
+                        │
+                        ▼
               Standard Nutrition JSON
-                         │
-              ┌──────────┴──────────┐
-              ▼                     ▼
+                        │
+              ┌─────────┴──────────┐
+              ▼                    ▼
          Save as JSON          Serving Size
-                                    │
-                                    ▼
+                                   │
+                                   ▼
                              Portion ÷ 100
-                                    │
-                                    ▼
+                                   │
+                                   ▼
                            Calculate Nutrients
-                                    │
-                                    ▼
+                                   │
+                                   ▼
                               Apple Health
 
 ⸻
@@ -147,13 +140,9 @@ Scan Barcode
       ↓
 Read Barcode Number
       ↓
-Open Food Facts
+Open Food Facts API (product_name + nutriments)
       ↓
-product_name + nutriments
-      ↓
-Normalize Nutrient Names
-      ↓
-Nutrition Tracker JSON
+.json adjustments
       ↓
 Save / Continue
 
@@ -182,12 +171,9 @@ Nutrition information can also be entered manually.
 This is useful when:
 
 * a product is missing from Open Food Facts,
-* Open Food Facts contains incomplete information,
 * the database entry is incorrect,
 * the food has no barcode,
-* you have a nutrition label available,
-* you created the food yourself,
-* or you simply want full control over the values.
+* or you're offline
 
 
 ![Manual Nutrition Input](docs/images/03-manual-input.jpeg)
