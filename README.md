@@ -1,28 +1,67 @@
-# Nutrition Tracker
+**Nutrition Tracker**
 
-https://routinehub.co/shortcut/21541/
+
+*https://routinehub.co/shortcut/21541/*
+
 
 Your nutrition tracker is built directly into Apple Shortcuts and Apple Health.
 
 Nutrition Tracker is an Apple Shortcut designed to make detailed nutrition tracking in Apple Health faster, reusable, and independent of a single data source.
 
-This shortcut works best with two of my other shortcuts:
-
-- https://routinehub.co/shortcut/24903/
-- https://routinehub.co/shortcut/26329/
-
-Check them out. A README for them might drop soon too.
-
----
-
-## Nutrient Tracker Shortcut
-
 Food can currently be added using:
 
-- 📷 Barcode Scan
-- ✍️ Manual Input
-- 🤖 AI
-- 💾 Saved JSON files
+* 📷 Barcode Scan
+* ✍️ Manual Input
+* 🤖 AI
+* 💾 Saved JSON files
+* 🔗 JSON passed from another Shortcut
+
+No matter where the nutritional information comes from, Nutrition Tracker converts it into the same internal JSON structure.
+
+From that point onward, every input method uses the same workflow:
+
+Normalize → Save → Select serving size → Calculate nutrients → Log to Apple Health
+
+This standardized JSON format is the core of Nutrition Tracker.
+
+⸻
+
+Table of Contents
+
+* How Nutrition Tracker Works
+* Architecture
+* 1. Choosing an Input Method
+* 2. Barcode Scan
+* 3. Manual Input
+* 4. AI Input
+* 5. Shortcut Input
+* 6. Saved JSON
+* 7. Data Normalization
+* 8. Nutrition JSON Format
+* 9. Local Food Database
+* 10. Serving Size
+* 11. Nutrient Calculation
+* 12. Apple Health
+* 13. Nutrients
+* 14. Nutrients Without a Direct Apple Health Mapping
+* 15. Why JSON?
+* 16. Offline Usage
+* 17. Privacy
+* 18. Installation
+* 19. Permissions
+* 20. Screenshots
+* 21. Example Workflow
+* 22. Using Another AI Service
+* 23. Extending Nutrition Tracker
+* 24. Troubleshooting
+* 25. Limitations
+* 26. Feedback
+* 27. Credits
+* 28. Disclaimer
+
+⸻
+
+How Nutrition Tracker Works
 
 Nutrition Tracker is built around one important principle:
 
@@ -32,77 +71,117 @@ Instead of creating a completely different Apple Health workflow for barcode sca
 
 That dictionary is then used by the rest of the Shortcut.
 
+flowchart TD
+    A[Nutrition Tracker] --> B{Choose Input Method}
+    B --> C[Barcode Scan]
+    B --> D[Manual Input]
+    B --> E[AI]
+    B --> F[Saved JSON]
+    B --> G[Shortcut Input]
+    C --> H[Raw Nutrition Data]
+    D --> H
+    E --> H
+    F --> H
+    G --> H
+    H --> I[Normalize Nutrient Names]
+    I --> J[Standard Nutrition JSON]
+    J --> K[Save Food]
+    J --> L[Enter Serving Size]
+    K --> L
+    L --> M[Serving Size ÷ 100]
+    M --> N[Calculate Every Nutrient]
+    N --> O[Map Supported Nutrients]
+    O --> P[Apple Health]
+
 The architecture can therefore be simplified to five major stages:
 
 1. INPUT
-   ↓
+      ↓
 2. NORMALIZATION
-   ↓
+      ↓
 3. STORAGE
-   ↓
+      ↓
 4. PORTION CALCULATION
-   ↓
+      ↓
 5. APPLE HEALTH
 
-...or more detailed like this:
+⸻
 
-```text
-             ┌────────────────────┐
-             │  Nutrition Tracker │
-             └─────────┬──────────┘
-                       │
-                       ▼
+Architecture
+
+Nutrition Tracker separates where the nutrition data comes from from what happens with the data afterwards.
+
+             ┌─────────────────────┐
+             │  Nutrition Tracker  │
+             └──────────┬──────────┘
+                        │
+                        ▼
               Choose Input Method
-                       │
-       ┌───────────────┼────────────────┐───────────────┐
-    Barcode           Manual             AI         Saved JSON
-       │                │                │               │
-       │                │                │               │
-       └────────–───────┴────────-───────┴───────────────┘
-                       │
-                       ▼
-               Raw Nutrition Data
-                       │
-                       ▼
-                    Formatting
-                       │
-                       ▼
-             Standard Nutrition JSON
-                       │
-             ┌─────────┴──────────┐
-             ▼                    ▼
-        Save as JSON          Serving Size
-                                  │
-                                  ▼
-                            Portion ÷ 100
-                                  │
-                                  ▼
-                          Calculate Nutrients
-                                  │
-                                  ▼
-                             Apple Health
-```
+                        │
+       ┌────────────────┼────────────────┐
+       │                │                │
+       ▼                ▼                ▼
+    Barcode           Manual             AI
+       │                │                │
+       │                │                │
+       └────────┬───────┴────────┬───────┘
+                │                │
+                ▼                ▼
+          Saved JSON       Shortcut Input
+                │                │
+                └────────┬───────┘
+                         │
+                         ▼
+                Raw Nutrition Data
+                         │
+                         ▼
+                     Formatting
+                         │
+                         ▼
+              Standard Nutrition JSON
+                         │
+              ┌──────────┴──────────┐
+              ▼                     ▼
+         Save as JSON            
+         							Save as JSON  
+												│
+					   						▼                     
+         							Serving Size  
+                                    │
+                                    ▼
+                             Portion ÷ 100
+                                    │
+                                    ▼
+                           Calculate Nutrients
+                                    │
+                                    ▼
+                              Apple Health
 
----
+Because the later stages do not care where the data originally came from, additional input methods can be added without rebuilding the entire Shortcut.
 
-## 1. Choosing an Input Method
+⸻
 
-When you start Nutrition Tracker, you choose how the food should be loaded.
+1. Choosing an Input Method
+
+When Nutrition Tracker starts, you choose how the food should be loaded.
 
 The main options are:
 
-| Input | Purpose |
-| --- | --- |
-| Barcode Scan | Retrieve packaged food from Open Food Facts |
-| Manual Input | Enter nutrition information yourself |
-| AI | Estimate or extract nutrition information using AI |
-| Saved JSON | Load a food that was previously saved |
+Input	Purpose
+Barcode Scan	Retrieve packaged food from Open Food Facts
+Manual Input	Enter nutrition information yourself
+AI	Estimate or extract nutrition information using AI
+Saved JSON	Load a food that was previously saved
+Shortcut Input	Receive compatible JSON from another Shortcut
 
 All of these methods eventually produce the same standardized nutrition dictionary.
 
----
 
-## 2. Barcode Scan
+![Nutrition Tracker Main Menu](docs/images/01-main-menu.jpeg)
+
+⸻
+
+2. Barcode Scan
 
 Barcode scanning is intended primarily for packaged food.
 
@@ -110,55 +189,57 @@ Nutrition Tracker uses the device camera to scan the barcode.
 
 The barcode is then sent to Open Food Facts to retrieve product information.
 
-The Shortcut requests:
+The Shortcut requests information such as:
 
-- `product_name`
-- `nutriments`
+product_name
+nutriments
 
 The nutriments dictionary can contain values such as:
 
-- Energy
-- Fat
-- Saturated fat
-- Carbohydrates
-- Sugars
-- Fiber
-- Protein
-- Salt
-- Sodium
-- Potassium
-- Calcium
-- Magnesium
-- Iron
-- Zinc
-- Vitamins
-- and many other available nutrients
+* Energy
+* Fat
+* Saturated fat
+* Carbohydrates
+* Sugars
+* Fiber
+* Protein
+* Sodium
+* Potassium
+* Calcium
+* Magnesium
+* Iron
+* Zinc
+* Vitamins
+* and many other available nutrients
 
-Not every Open Food Facts product contains every nutrient and not every food is available in the library.
+Not every Open Food Facts product contains every nutrient.
 
 Nutrition Tracker therefore processes whatever information is available.
 
+
 <!-- ![Barcode Scanner](docs/images/02-barcode-scanner.png) -->
 
-### Barcode Workflow
+⸻
 
-```text
+Barcode Workflow
+
 Scan Barcode
       ↓
 Read Barcode Number
       ↓
-Open Food Facts API
-(product_name + nutriments)
+Open Food Facts
       ↓
-.json adjustments
+product_name + nutriments
+      ↓
+Normalize Nutrient Names
+      ↓
+Nutrition Tracker JSON
       ↓
 Save / Continue
-```
 
 For example, the API data might eventually be converted into:
 
-```json
-{
+*{
   "food_name": "Example Food",
   "energy-kcal_100g": 361,
   "fat_100g": 6.7,
@@ -166,52 +247,38 @@ For example, the API data might eventually be converted into:
   "sugars_100g": 1.2,
   "fiber_100g": 11,
   "proteins_100g": 14
-}
-```
+}*
 
 These values describe the food per 100 g.
 
 The actual amount eaten is calculated later.
 
-### A small thing happening in the background
+⸻
 
-Open Food Facts and the Nutrition Tracker do not always use exactly the same units.
-
-For example, some minerals are returned by Open Food Facts in g/100 g while the internal JSON uses mg/100 g.
-
-So the Shortcut converts those values before storing them.
-
-For example:
-
-```text
-0.25 g / 100 g
-       ↓
-250 mg / 100 g
-```
-
-This means the rest of the Shortcut can work with one consistent format.
-
----
-
-## 3. Manual Input
+3. Manual Input
 
 Nutrition information can also be entered manually.
 
 This is useful when:
 
-- a product is missing from Open Food Facts,
-- the database entry is incorrect,
-- the food has no barcode,
-- or you're offline
+* a product is missing from Open Food Facts,
+* Open Food Facts contains incomplete information,
+* the database entry is incorrect,
+* the food has no barcode,
+* you have a nutrition label available,
+* you created the food yourself,
+* or you simply want full control over the values.
 
-It will ask for every single nutrient one after another.
 
-They are grouped by measurement and after each group you will be asked if you want to skip the next one, so you can skip the mg and/or µg nutrients if you don't need them.
+![Manual Nutrition Input](docs/images/03-manual-input.jpeg)
+
+
+
+It will ask for every singe nutrient one after another. Its  grouped by measurement and after each group you will be ask if you want to skip the next one so you can skip the mg and/or µg nutrients.
 
 The final .json will look something like this:
 
-```json
-{
+*{
   "food_name": "Homemade Granola",
   "energy-kcal_100g": 430,
   "fat_100g": 15,
@@ -220,26 +287,27 @@ The final .json will look something like this:
   "sugars_100g": 12,
   "fiber_100g": 8,
   "proteins_100g": 13
-}
-```
+}*
 
 Missing nutrients do not prevent the food from being used.
 
-Values that are unavailable are normally kept as 0 in the standardized dictionary.
+Values that are unavailable can either be omitted during processing or represented as 0, depending on the specific part of the Shortcut.
 
----
+⸻
 
-## 4. AI Input
+4. AI Input
 
 The AI mode is intended for food where reliable structured nutrition data is not immediately available.
 
-Like:
+Examples include:
 
-- Restaurant meals
-- Homemade meals
-- Mixed meals
-- Food from a picture
-- Products where you don't want to enter everything manually
+* Restaurant meals
+* Homemade meals
+* Mixed meals
+* Food shown in a photo
+* Products without complete nutrition labels
+* Unpackaged food
+
 
 <!-- ![AI Nutrition Analysis](docs/images/04-ai-analysis.jpeg) -->
 
@@ -247,9 +315,9 @@ You will be asked to take a picture of the food and then you will hopefully get 
 
 For example:
 
-```json
-{
+*{
   "food_name": "Vegetable Pasta",
+  "estimated_weight_in-gr": 450,
   "energy-kcal_100g": 142,
   "fat_100g": 4.2,
   "saturated-fat_100g": 1.1,
@@ -258,8 +326,7 @@ For example:
   "sugars_100g": 3.2,
   "fiber_100g": 2.8,
   "proteins_100g": 5.1
-}
-```
+}*
 
 Because the response follows the same format used by the rest of Nutrition Tracker, it can immediately enter the normal processing workflow.
 
@@ -269,7 +336,12 @@ It only has to produce compatible nutrition JSON.
 
 Nutrition Tracker handles everything after that.
 
-```text
+⸻
+
+AI Photo Analysis
+
+A possible workflow is:
+
 Take Photo
      ↓
 AI analyzes food
@@ -283,43 +355,65 @@ Nutrition Tracker
 Serving Size
      ↓
 Apple Health
-```
-
-### Using another Shortcut or AI service
-
-The AI JSON can also be passed into Nutrition Tracker through Shortcut Input.
-
-This means you don't necessarily have to build the AI directly into this Shortcut.
-
-You can have something like:
-
-```text
-Another Shortcut
-      ↓
-Take / select photo
-      ↓
-AI analyzes food
-      ↓
-AI generates Nutrition JSON
-      ↓
-Nutrition Tracker
-      ↓
-Serving Size
-      ↓
-Apple Health
-```
-
-This also means you can replace the AI service if you want.
-
-ChatGPT is optional and is only one possible way of generating the JSON. You can use another AI service as long as it produces the expected structure.
 
 When nutrition information is clearly visible on packaging, those visible values should be preferred over AI estimation whenever possible.
 
 AI-generated values should always be treated as estimates when no verified data is available.
 
----
+⸻
 
-## 5. Saved JSON
+5. Shortcut Input
+
+Nutrition Tracker can also act as a central nutrition-processing Shortcut for other Shortcuts.
+
+Instead of every Shortcut implementing its own:
+
+* nutrition calculations,
+* serving-size calculations,
+* JSON handling,
+* nutrient mapping,
+* and Apple Health logging,
+
+another Shortcut can generate Nutrition Tracker-compatible JSON and pass it to Nutrition Tracker.
+
+For example:
+
+Custom Food Shortcut
+        ↓
+Take Photo
+        ↓
+Run AI
+        ↓
+Create Nutrition JSON
+        ↓
+Run Nutrition Tracker
+        ↓
+Calculate Serving
+        ↓
+Apple Health
+
+This allows Nutrition Tracker to act as a reusable backend.
+
+Possible external workflows include:
+
+Nutrition Label OCR
+        ↓
+Nutrition Tracker
+Recipe Calculator
+        ↓
+Nutrition Tracker
+Local AI Model
+        ↓
+Nutrition Tracker
+Custom API
+        ↓
+Nutrition Tracker
+
+As long as the data can be converted to the expected JSON structure, the remaining Nutrition Tracker workflow can stay the same.
+
+⸻
+
+6. Saved JSON
 
 Foods do not need to be downloaded, generated, or entered every time.
 
@@ -327,8 +421,7 @@ Once a food has been processed, its nutrition profile can be stored as a .json f
 
 For example:
 
-```text
-Nutrients Database/
+Nutrition Tracker/
 │
 ├── Banana.json
 ├── Oatmeal.json
@@ -336,12 +429,10 @@ Nutrients Database/
 ├── Protein Powder.json
 ├── Milk.json
 └── Pasta.json
-```
 
-A saved file for bananas could contain:
+A saved file might contain:
 
-```json
-{
+*{
   "food_name": "Banana",
   "energy-kcal_100g": 89,
   "fat_100g": 0.3,
@@ -349,88 +440,77 @@ A saved file for bananas could contain:
   "sugars_100g": 12.2,
   "fiber_100g": 2.6,
   "proteins_100g": 1.1
-}
-```
+}*
 
 When that food is selected later, Nutrition Tracker can skip:
 
-- Barcode scanning
-- Open Food Facts
-- AI analysis
-- Manual entry
+* Barcode scanning
+* Open Food Facts
+* AI analysis
+* Manual entry
 
 and move directly to the serving-size calculation.
 
-The backend (the folder) will look like this:
+![Saved Foods](docs/images/05-saved-foods.jpeg)
 
-### Optional file naming tip
+ the backend (the folder) will look like this 
 
-If you often eat certain foods as individual pieces, you can also put an approximate standard weight into the filename.
+![Saved Foods](docs/images/05-5-saved-foods.jpeg)
 
-For example:
+⸻
 
-`Ei(m~50g).json`
-
-The `~` is just meant to show that the weight is approximate.
-
-This is only a naming convention and has no effect on the actual calculation.
-
-The amount that gets added to Apple Health is still determined by the portion you enter when running the Shortcut.
-
----
-
-## 6. Data Normalization
+7. Data Normalization
 
 One of the most important parts of Nutrition Tracker is nutrient normalization.
 
-Different databases, APIs and AI models do not always use the same property names or units.
+Different databases, APIs and AI models do not always use the same property names.
 
-For example, a source might provide a value under a slightly different name or in a different unit.
+For example, protein may appear as:
 
-Nutrition Tracker therefore converts the incoming data into its own standardized dictionary before continuing with the rest of the Shortcut.
+protein_100g
 
-The important part is that the following stages don't have to care where the information originally came from.
+or:
 
-It basically works like this:
+proteins_100g
 
-```text
-Barcode
-Manual
-AI
-Saved JSON
-   │
-   ▼
-Standardized Nutrition Dictionary
-   │
-   ▼
-Same processing for everything
-```
+or:
 
-Normalization happens at different points depending on the input method.
+Eiweiß_100g
 
-For example, the Barcode input converts the Open Food Facts values into the internal format before the common processing starts.
+or
 
-The final normalization step then makes sure that the values used by the rest of the Shortcut have the expected structure and numeric types.
+Vitamin B1 might appear as:
 
-This makes Nutrition Tracker compatible with:
+*vitamin-b1_100g
+thiamine_100g*
 
-- Open Food Facts API
-- AI-generated JSON
-- Manually generated JSON
-- Saved food JSON
-- and potentially other sources in the future
+Instead of requiring every source to use exactly the same name, Nutrition Tracker can recognize multiple aliases and map them to the nutrient used internally.
 
----
+it works like this:
 
-## 7. Nutrition JSON Format
+*Eiweiß_100g* or *proteins_100g* ──► *Protein_100g*
+
+
+
+This makes Nutrition Tracker more compatible with:
+
+* Open Food Facts
+* AI-generated JSON
+* Manually generated JSON
+* External Shortcuts
+* Future APIs
+
+⸻
+
+8. Nutrition JSON Format
 
 The JSON dictionary is the central interface of Nutrition Tracker.
 
-An example empty food JSON may look like this:
+A larger food object may look like this:
 
-```json
 {
   "food_name": "",
+  "estimated_weight_in-gr": 0,
   "energy-kcal_100g": 0,
   "fat_100g": 0,
   "saturated-fat_100g": 0,
@@ -472,75 +552,70 @@ An example empty food JSON may look like this:
   "water_100g": 0,
   "creatine_100g": 0
 }
-```
 
-The actual schema can contain even more fields than shown here.
+The complete internal structure can contain additional fields and aliases beyond this example.
 
-The idea is that the JSON can be broader than what Apple Health currently supports.
+These can include values such as:
 
-This leaves room for future features without having to redesign all existing food files.
+* Omega-3
+* Omega-6
+* Choline
+* Fluoride
+* Retinol
+* Beta-carotene
+* Different vitamin forms
+* Electrolyte-related values
+* Creatine
+* Amino acids
+* Additional supplement-related fields
 
-For example, fields can also be used for:
+The schema is intentionally broader than the values currently written to Apple Health.
 
-- Omega-3
-- Omega-6
-- Choline
-- Fluoride
-- Retinol
-- Beta-carotene
-- Different vitamin forms
-- Electrolyte-related values
-- Creatine
-- Amino acids
-- Other supplement-related values
+⸻
+
+Naming Convention
 
 Most nutrient keys follow:
 
-`nutrient_100g`
+nutrient_100g
 
 For example:
 
-```json
-{
+*{
   "fat_100g": 6.7,
   "fiber_100g": 11,
   "proteins_100g": 14
-}
-```
+}*
 
 Energy uses:
 
-```json
-{
+*{
   "energy-kcal_100g": 361
-}
-```
+}*
 
-The important thing is not that every possible nutrient has to be available.
+Metadata does not necessarily use the _100g suffix - though those are optional for the shortcut:
 
-A food can contain only the values that are actually known.
+*{
+  "food_name": "Oatmeal",
+  "estimated_weight_in-gr": 250
+}*
 
----
+⸻
 
-## 8. Local Food Database (backend)
+9. Local Food Database
 
-Every saved food becomes part of your personal food database, which is stored in your own files.
+Every saved food becomes part of a personal food database, that is privately and safely stored in your own files stored.
 
-The backend folder is:
+The first time you add a food, you may need to:
 
-`Nutrients Database`
-
-The first time you add a food, you have to:
-
-- scan it,
-- manually enter it,
-- or analyze it.
+* scan it,
+* enter it,
+* or analyze it.
 
 Afterwards, Nutrition Tracker can reuse the stored JSON.
 
-### Example
+Example:
 
-```text
 First time:
 Barcode
    ↓
@@ -551,11 +626,9 @@ Normalize
 Save Oatmeal.json
    ↓
 Track
-```
 
 Later:
 
-```text
 Saved JSON
    ↓
 Oatmeal.json
@@ -563,122 +636,92 @@ Oatmeal.json
 Serving Size
    ↓
 Track
-```
 
 This reduces repeated API requests and makes frequently eaten foods significantly faster to log.
 
-Pro tip: You can select multiple foods now and they get processed one after another.
+⸻
 
----
+10. Serving Size
 
-## 9. Serving Size
-
-Nutrition profiles are normally stored relative to 100 g.
+Nutrition profiles are stored relative to 100 g.
 
 After the food has been loaded, Nutrition Tracker asks for the amount actually consumed.
 
 Example:
 
-```text
-How many grams did you eat?
-250 g
-```
+*How many grams did you eat?
+250 g*
 
 Nutrition Tracker calculates a serving factor:
 
-`Serving Factor = Serving Size ÷ 100`
+*Serving Factor = Serving Size ÷ 100*
 
 For 250 g:
 
-`250 ÷ 100 = 2.5`
+*250 ÷ 100 = 2.5*
 
 That factor is then applied to the available nutrition values.
 
-### Supplements and very small serving sizes
 
-If you have supplements that are normally consumed in very small amounts, enter their normal serving size instead of scaling the nutritional values up to 100 g.
+![Serving Size](docs/images/06-serving-size.jpeg)
 
-For example, if a supplement normally has a serving size of 5 g, enter the nutritional values for that 5 g serving as they are provided on the product.
+⸻
 
-However, when you want to track that supplement, enter 100 g as the portion size.
+11. Nutrient Calculation
 
-This makes the calculation use the saved serving values exactly once instead of scaling them down again.
+Suppose a food contains:
 
-So for a 5 g serving:
-
-```text
-Saved nutrition values
-       ↓
-5 g serving
-       ↓
-Track with 100 g
-       ↓
-100 ÷ 100 = 1
-       ↓
-Original values are added
-```
-
-This is mainly useful for supplements where using a 100 g reference would result in completely unrealistic numbers.
-
----
-
-## 10. How to Calculate the Nutritions
-
-The general formula is:
-
-`Actual Nutrient = Nutrient per 100 g × (Serving Size ÷ 100)`
-
-So suppose a food contains:
-
-`Protein = 14 g / 100 g`
+*Protein = 14 g / 100 g*
 
 and the serving is:
 
-`250 g`
+*250 g*
 
-The Nutrition Tracker then calculates:
+Nutrition Tracker calculates:
 
-`14 × (250 ÷ 100) = 35 g`
+*14 × 2.5 = 35 g*
 
-It then repeats that step for every given nutrient for one food.
+The general formula is:
 
-After that, the Shortcut has to match every calculated nutrient with the corresponding Apple Health nutrient.
+Actual Nutrient =
+*Nutrient per 100 g × (Serving Size ÷ 100)*
 
-This is where the code gets a bit ugly.
+For this example:
 
-The Shortcut performs a rather long if chain to match each value with the corresponding Apple Health sample type.
+Energy:
+*361 × 2.5
+= 902.5 kcal*
+Fat:
+*6.7 × 2.5
+= 16.75 g*
+Carbohydrates:
+*56 × 2.5
+= 140 g*
+Sugars:
+*1.2 × 2.5
+= 3 g*
+Fiber:
+*11 × 2.5
+= 27.5 g*
+Protein:
+*14 × 2.5
+= 35 g*
 
-Unfortunately, this is not really avoidable here because the Health action does not allow the sample type to be supplied as a normal variable.
+After running through all elected foods the shortcut will then ask if you want to repeat the process incase you forgot something 
 
-So instead of being able to do something like:
+![Apple Health Nutrition Data](docs/images/06-6-repeat?.jpeg)
+⸻
 
-`logHealth(nutrientTypeVariable)`
-
-the Shortcut has to explicitly specify:
-
-- Dietary Energy
-- Dietary Fat Total
-- Dietary Protein
-- Dietary Calcium
-- ...
-
-for every supported nutrient.
-
-After running through all selected foods, the Shortcut will then ask if you want to repeat the process in case you forgot something.
-
----
-
-## 11. Apple Health
+12. Apple Health
 
 After the serving values have been calculated, compatible nutrients are passed to Apple Health.
 
-Nutrition Tracker uses Apple Shortcuts' Health logging functionality to create individual Health samples.
+Nutrition Tracker uses Apple Shortcuts’ Health logging functionality to create individual Health samples.
 
 Each nutrient is handled separately.
 
 For example:
 
-```text
 Calculated Nutrition JSON
           │
           ├── Energy ──────► Apple Health
@@ -687,491 +730,554 @@ Calculated Nutrition JSON
           ├── Calcium ─────► Apple Health
           ├── Magnesium ───► Apple Health
           └── ...
-```
 
-The Shortcut currently writes supported values using the appropriate Apple Health quantity unit:
+![Apple Health Nutrition Data](docs/images/07-apple-health.jpeg)
 
-- g
-- mg
-- kcal
-- mL
+This also makes the data available to compatible apps that read nutrition information from Apple Health, subject to the permissions the user has granted those apps.
 
-The actual precision is then handled by Apple's quantity system, so values can be stored at the precision supported by Apple Health.
+⸻
 
-### Why there are so many individual Health actions
+13. Nutrients
 
-This is one of the more annoying limitations of the current Shortcuts/Health implementation.
+Nutrition Tracker’s data structure can contain a large number of nutritional values.
 
-The Health action needs a specific sample type such as:
+Macronutrients
 
-- Dietary Protein
-- Dietary Calcium
+* Energy
+* Fat
+* Saturated fat
+* Unsaturated fat
+* Carbohydrates
+* Sugars
+* Fiber
+* Protein
 
-The sample type cannot simply be replaced by a normal variable.
+Fat-related values
 
-That's why the Shortcut contains a separate block for each supported nutrient.
+* Saturated fat
+* Unsaturated fat
+* Omega-3
+* Omega-6
+* Cholesterol
 
-It looks repetitive, but it is intentional.
+Minerals and Electrolytes
 
----
+* Salt
+* Sodium
+* Potassium
+* Calcium
+* Magnesium
+* Iron
+* Zinc
+* Copper
+* Manganese
+* Phosphorus
+* Iodine
+* Chloride
+* Chromium
+* Selenium
+* Molybdenum
+* Fluoride
+* Electrolytes
 
-## 12. Nutrients
+Vitamins
 
-Nutrition Tracker's JSON data structure can contain a large number of nutritional values.
+* Vitamin A
+* Vitamin B1 / Thiamine
+* Vitamin B2 / Riboflavin
+* Vitamin B3 / Niacin
+* Vitamin B5 / Pantothenic acid
+* Vitamin B6
+* Vitamin B7 / Biotin
+* Vitamin B9 / Folate
+* Vitamin B12
+* Vitamin C
+* Vitamin D
+* Vitamin E
+* Vitamin K
 
-### Macronutrients
+Additional vitamin-related values can include:
 
-- Energy
-- Fat
-- Saturated fat
-- Unsaturated fat
-- Carbohydrates
-- Sugars
-- Fiber
-- Protein
 
-### Minerals and electrolytes
+(some of them are not in Apple Health yet but later more to that)
+Which values Nutrition Tracker actually writes depends on the data available and the mappings implemented in the current Shortcut and Apple Health version.
 
-- Sodium
-- Potassium
-- Calcium
-- Magnesium
-- Iron
-- Zinc
-- Copper
-- Manganese
-- Phosphorus
-- Iodine
-- Chloride
-- Chromium
-- Selenium
-- Molybdenum
 
-### Vitamins
+* Retinol
+* Beta-carotene
+* Folic acid
+* Individual vitamin D forms
+* Individual vitamin K forms
 
-- Vitamin A
-- Vitamin B6
-- Vitamin B12
-- Vitamin C
-- Vitamin D
-- Vitamin E
-- Vitamin K
-- Thiamine
-- Riboflavin
-- Niacin
-- Pantothenic acid
-- Folate
-- Biotin
+Other Nutritional Values
 
-### Other values
+* Water
+* Caffeine
+* Choline
 
-- Salt
-- Cholesterol
-- Caffeine
-- Water
-- Creatine
-- Amino acids
-- Other values that can be added to the JSON format
+Amino Acids and Sports Nutrition
 
-Some of these values are currently only stored in the JSON data and are not sent to Apple Health.
+* Creatine
+* Leucine
+* Isoleucine
+* Valine
 
-That is intentional.
 
-The JSON format is designed to be broader than the current Apple Health implementation so that new features can be added later without having to rebuild the food database.
+⸻
 
----
+14. Nutrients Without a Direct Apple Health Mapping
 
-## 13. Nutrients that Apple Health does not directly support
 
-Not every nutrient in the JSON has a direct equivalent in Apple Health.
+Other stored information like *Amino Acids* may not have a direct Apple Health nutrition type yet.
+
+This does not mean the data is useless.Values such as:
+
+{
+  "leucine_100g": 0,
+  "isoleucine_100g": 0,
+  "valine_100g": 0
+}
+
+can remain available for future features even if they are not written to Apple Health.
+
+⸻
+
+15. Why JSON?
+
+JSON is used because it provides several important advantages.
+
+One Common Interface
+
+Every input method eventually creates the same type of object.
+
+Barcode ─────┐
+Manual ──────┤
+AI ──────────┼──► JSON ───► Nutrition Tracker
+Saved Food ──┤
+Other App ───┘
+
+⸻
+
+Offline Usage
+
+Saved JSON files do not require a new API or AI request.
+
+⸻
+
+Expandability
+
+A new nutrient can be added without rebuilding the complete data model.
 
 For example:
 
-`"unsaturated-fat_100g": 5`
-
-does not have a single Apple Health category called "Unsaturated Fat".
-
-Apple Health separates different types of fat instead.
-
-Because of that, Nutrition Tracker does not simply guess where the total unsaturated fat should go.
-
-The same idea applies to salt.
-
-The JSON can contain:
-
-`"salt_100g": 1.2`
-
-while Apple Health uses dietary sodium as its corresponding supported quantity.
-
-So the Shortcut keeps both concepts separate:
-
-```text
-Salt
-   ↓
-stored in JSON
-Sodium
-   ↓
-Apple Health Dietary Sodium
-```
-
-This prevents the Shortcut from pretending that two different measurements are the same thing.
-
-Water is another special case.
-
-The food JSON stores water as grams:
-
-`water_100g`
-
-When logging it to Apple Health, the Shortcut uses the corresponding volume quantity in mL because Apple Health's dietary water quantity is volume-based.
-
----
-
-## 14. Why JSON?
-
-JSON works particularly well for this Shortcut.
-
-### Offline use
-
-Once a food is saved, it can be loaded without another API request or AI request.
-
-### Easy to extend
-
-New nutrients can simply be added to the dictionary.
-
-```json
 {
-  "creatine_100g": 0,
+  "creatine_100g": 0
+}
+
+or:
+
+{
   "leucine_100g": 0
 }
-```
 
-There is no need to redesign the entire food database.
+⸻
 
-### Compatibility
+Compatibility
 
-JSON can easily be read or generated by:
+JSON can easily be produced and processed by:
 
-- Apple Shortcuts
-- Cherri
-- JavaScript
-- Python
-- APIs
-- AI models
-- other applications
+* Apple Shortcuts
+* Cherri
+* JavaScript
+* Python
+* APIs
+* AI models
+* Servers
+* Other automation systems
 
-### Reusability
+⸻
 
-A food only has to be entered once.
+Reusability
 
-Afterwards, the same JSON file can be reused with different serving sizes.
+A food only needs to be defined once.
 
----
+After that, the same file can be used for:
 
-## 15. Internal Workflow
-
-The whole Shortcut can basically be reduced to these five parts:
-
-1. INPUT
-   ↓
-2. NORMALIZATION
-   ↓
-3. STORAGE
-   ↓
-4. PORTION CALCULATION
-   ↓
-5. APPLE HEALTH
-
-### Input
-
-Loads the raw data through:
-
-- Barcode
-- Manual Input
-- AI
-- Saved JSON
-
-### Normalization
-
-Converts the source into the standardized Nutrition Tracker dictionary.
-
-### Storage
-
-New foods can be saved as .json files inside the `Nutrients Database` folder.
-
-### Portion Calculation
-
-Calculates:
-
-`value_100g × serving_size / 100`
-
-for every available nutrient.
-
-### Apple Health
-
-Writes the supported results as individual Health samples.
-
----
-
-## 16. Complete Example
-
-Let's say I scan a package of oatmeal.
-
-### Step 1 — Scan Barcode
-
-```text
-Scan Barcode
-     ↓
-Open Food Facts
-     ↓
-Oatmeal
-```
-
-The returned information is converted into something like:
-
-```json
-{
-  "food_name": "Oatmeal",
-  "energy-kcal_100g": 370,
-  "fat_100g": 7,
-  "carbohydrates_100g": 59,
-  "fiber_100g": 10,
-  "proteins_100g": 13
-}
-```
-
-### Step 2 — Save
-
-The food can then be stored as:
-
-`Nutrients Database/Oatmeal.json`
-
-### Step 3 — Serving Size
-
-I enter:
-
-`150 g`
-
-The Shortcut calculates:
-
-`150 ÷ 100 = 1.5`
-
-### Step 4 — Calculate
-
-```text
-Energy:
-370 × 1.5 = 555 kcal
-Fat:
-7 × 1.5 = 10.5 g
-Carbohydrates:
-59 × 1.5 = 88.5 g
-Fiber:
-10 × 1.5 = 15 g
-Protein:
-13 × 1.5 = 19.5 g
-```
-
-### Step 5 — Apple Health
-
-The supported values are then added to Apple Health.
-
-The next time I eat oatmeal, I don't need to scan anything again:
-
-```text
-Saved JSON
-     ↓
-Oatmeal.json
-     ↓
+50 g
+100 g
 150 g
-     ↓
-Calculate
-     ↓
+234 g
+250 g
+500 g
+523 g
+
+without changing the original nutritional profile.
+
+⸻
+
+16. Offline Usage
+
+One of the main advantages of local food storage is that already saved foods can continue to work without an internet connection.
+
+Internet available
+        │
+        ├── Barcode
+        ├── AI
+        └── Manual Input
+                │
+                ▼
+            Save JSON
+                │
+                ▼
+        Local Food Database
+                │
+                ▼
+               
+          Serving Size
+                │
+                ▼
+          Apple Health
+
+          
+Offline mode
+        |
+        ├── Manual Input
+        └──  Load Saved JSON
+                │
+                ▼
+        
+          Serving Size
+                │
+                ▼
+          Apple Health
+
+An internet connection is therefore only required for features that actually depend on an online service.
+
+⸻
+
+17. Privacy
+
+Nutrition Tracker itself is built using Apple Shortcuts, but privacy depends on which input method is used.
+
+Local Operations
+
+Operations such as:
+
+* Reading saved JSON
+* Selecting food
+* Calculating serving sizes
+* Normalizing locally available data
+* Calculating nutrient values
+
+can be performed locally.
+
+The Files are securely stored in your Apple Files app, and this shortcut will only read the certain Data Base Folder.
+It will never, ever read any of your private Health Data only write Nutritional ones.
+⸻
+
+Barcode Lookup
+
+Barcode mode sends the product barcode to Open Food Facts so that product information can be retrieved.
+
+⸻
+
+AI
+
+Using AI may send:
+
+* Food descriptions
+* Nutrition text
+* Images
+* Other provided input
+
+to the selected AI provider.
+
+The privacy policy of that provider applies.
+
+AI is optional.
+
+⸻
+
 Apple Health
-```
 
-No internet connection is required for the saved-food part.
+Nutrition Tracker requires permission before writing Health data.
 
----
+Health permissions remain under the user’s control.
 
-## 17. Design Principles
+⸻
 
-The Nutrition Tracker is deliberately not just a barcode app.
+18. Installation
 
-The JSON format is the central interface between different data sources and Apple Health.
+Requirements
 
-This means future input methods can be added without having to completely rebuild the rest of the Shortcut.
+Nutrition Tracker requires:
 
-For example:
+* Apple Shortcuts
+* Apple Health
+* A compatible iPhone or iPad for the required actions
+* Permission to access the required Health categories
 
-```text
-Nutrition Label OCR
+Internet access is additionally needed for certain features such as:
+
+* Open Food Facts
+* Online AI services
+
+Saved foods can be reused without those online requests.
+
+⸻
+
+Install
+
+[(https://routinehub.co/shortcut/21541/)]
+
+Then:
+
+1. Open the Nutrition Tracker link.
+2. Add the Shortcut.
+3. Run Nutrition Tracker.
+4. Allow the required permissions.
+5. Might run again to choose an input method.
+6. Add or load a food.
+7. Enter the amount consumed.
+8. Allow Nutrition Tracker to save the supported values to Apple Health.
+
+
+⸻
+
+19. Permissions
+
+Depending on the features used, Nutrition Tracker may request access to:
+
+Permission	Used For
+Internet is needed for the update and OpenFoodFacts APIs 
+Camera access  is needed for the Barcode scanning and the AI photo estimation (last one is optional by the way)
+Files	Saving and loading JSON foods
+Apple Health to Log all nutrition information
+
+You remain in control of which permissions are granted.
+
+
+⸻
+
+20. Using Another AI Service
+
+ChatGPT is optional.
+
+It is only used for AI-based nutrition analysis.
+
+The rest of Nutrition Tracker does not depend on ChatGPT.
+
+You can replace the AI section with another provider as long as the provider eventually returns compatible JSON.
+
+Conceptually:
+
+Nutrition Tracker
         ↓
-       JSON
+AI Request
+        ↓
+Your AI Provider
+        ↓
+Nutrition JSON
+        ↓
+Normalization
         ↓
 Nutrition Tracker
-```
+
+The important part is the output format, not which model generated it.
+
+Possible AI sources include:
+
+* ChatGPT
+* Another online AI provider
+* A local AI model
+* A custom server
+* A separate AI Shortcut
+just replace the ChatGPT action inside of the shortcut and make sure all the previously connected variables are reconnected 
+⸻
+
+⸻
+
+21. Troubleshooting
+
+Food is not found by barcode
+
+Try:
+
+Manual Input
 
 or:
 
-```text
-Recipe Calculator
-        ↓
-       JSON
-        ↓
-Nutrition Tracker
-```
+AI
 
-or:
+Afterwards, save the food as JSON so it does not need to be searched again.
 
-```text
-Restaurant Database
-        ↓
-       JSON
-        ↓
-Nutrition Tracker
-```
+⸻
 
-or:
+Open Food Facts is missing nutrients
 
-```text
-Local AI Model
-        ↓
-       JSON
-        ↓
-Nutrition Tracker
-```
+Open Food Facts entries depend on the information submitted for each product.
 
-or:
+Some foods may have:
 
-```text
-Custom API
-        ↓
-       JSON
-        ↓
-Nutrition Tracker
-```
+* only macros,
+* incomplete micronutrients,
+* outdated information,
+* or incorrect information.
 
-As long as the source can produce compatible Nutrition Tracker JSON, the rest of the workflow can stay the same.
+If you have the original product label, manual entry may be more accurate.
 
-That's the main reason I built it this way.
+⸻
 
----
+AI returns incorrect nutrition values based on text or photo input
 
-## Update System
+AI nutrition values are estimates.
 
-Nutrition Tracker uses an update system based on UpdateKit by Mike Beasley.
+Provide more detail.
 
-The basic idea is that the Shortcut can check whether a newer version is available instead of requiring users to manually keep checking the RoutineHub page.
+Instead of:
 
-UpdateKit handles the version comparison and can provide information about the available update.
+Pasta
 
-The current UpdateKit API is designed so that shortcut makers can either use a separate updater or integrate the update check directly into their own Shortcut. (Mike Beasley)
+use:
 
-This is especially useful for a Shortcut like Nutrition Tracker because it is still actively being developed and new Apple Shortcuts / Health features can require changes to the Shortcut.
+250 g cooked spaghetti
+100 g tomato sauce
+20 g Parmesan
 
-Apple still requires the user to confirm the installation of a Shortcut update. The update system can make finding the update easier, but it cannot silently replace the Shortcut. (Mike Beasley)
+Whenever possible, prefer verified nutrition labels or reliable food database information over AI estimates.
 
-More information about UpdateKit:
+⸻
 
-https://www.mikebeas.com/updatekit-api
+Apple Health values are missing
 
----
+Check that Shortcuts has permission to write the required nutrition categories.
 
-## Related Shortcuts
+Also remember that:
 
-Nutrition Tracker is mainly meant to provide the nutrition data.
+* not every JSON value has a direct Apple Health category,
+* missing source values cannot be logged,
+* and some Nutrition Tracker fields are intentionally stored only for future or custom use.
 
-I also made a couple of other Shortcuts that work nicely with the data stored in Apple Health.
+⸻
 
-### Net Calorie Balance
+Incorrect saved food
 
-https://routinehub.co/shortcut/24903/
+If a saved food contains incorrect data, update or replace the JSON instead of repeatedly tracking the incorrect values.
 
-This Shortcut can be used to calculate your net calorie balance based on the nutrition information tracked in Apple Health.
+⸻
 
-So instead of only tracking what you ate, it can be used to look at the relationship between:
+22. Limitations
 
-```text
-Calories consumed
-        +
-Calories burned
-        ↓
-Net calorie balance
-```
+AI Is an Estimate
 
-If you're using Nutrition Tracker for regular nutrition tracking, this is probably the most useful companion Shortcut.
+AI cannot reliably know the exact:
 
-### Remaining Caffeine
+* ingredients,
+* recipe,
+* preparation method,
+* serving weight,
+* product variation,
+* or nutrient composition
 
-https://routinehub.co/shortcut/26329/
+of every meal.
 
-The other Shortcut is a bit more specific.
+⸻
 
-It visualizes how much of your tracked caffeine is estimated to remain in your body over the following hours.
+Barcode Databases Are Not Perfect
 
-The result can be displayed visually using the Charty app, so instead of just having a list of caffeine entries you can see the estimated decline over time.
+Open Food Facts data can be incomplete or incorrect.
 
-```text
-Caffeine consumed
-       ↓
-Apple Health
-       ↓
-Caffeine tracking
-       ↓
-Estimated remaining caffeine
-       ↓
-Charty visualization
-```
+⸻
 
-This is useful if you want to see how individual caffeine intake can affect the estimated amount remaining later in the day.
+Serving Size Is Important
 
----
+Correct source nutrition data with an incorrect serving size still produces incorrect tracking data.
 
-## Future Ideas
+⸻
 
-There are still quite a few things that could be added.
+Nutrition Tracker Stores More Than Apple Health
 
-Some possible future input methods:
+Some values are intentionally preserved even when Apple Health cannot currently store them directly.
 
-- 📷 Nutrition Label OCR
-- 🍳 Recipe Calculator
-- 🏪 Restaurant Database
-- 🤖 Local AI
-- 🌐 Other AI services
-- 🔌 Custom APIs
-- 🧬 More amino acids
-- 💊 More supplement-specific nutrients
-- 📊 More Apple Health integrations
+⸻
 
-The JSON-based structure should make these easier to add without changing the basic workflow.
+Nutrition Tracker Is Not a Medical Device
 
----
+It is intended for nutrition tracking and automation, not diagnosis or medical decision-making.
 
-## A few things to keep in mind
+⸻
 
-### Open Food Facts
+23. Feedback
 
-Open Food Facts is useful, but its data is community-supplied and can be incomplete or incorrect.
+If you find a bug or have an idea for a new feature, feel free to:
 
-If a product label clearly provides different values, check the label before relying on the database entry.
+* Open a GitHub Issue
+* Leave a comment
+* Submit a feature request
+* Contact me through one of my pinned networks
 
-### AI
+Useful information for bug reports includes:
 
-AI nutrition estimates are estimates.
+Nutrition Tracker version:
+Device:
+iOS / iPadOS version:
+Input method:
+Barcode / Manual / AI / Saved JSON / Shortcut Input
+Expected result:
+Actual result:
+Screenshot:
 
-They can be useful for meals where no structured data exists, but they should not be treated as laboratory measurements.
+Please avoid publishing private Apple Health information in public bug reports.
 
-### Apple Health
+⸻
 
-Only nutrients with a corresponding Apple Health quantity are currently written to Apple Health.
+24. Credits
 
-The JSON database intentionally contains more information than Apple Health currently supports.
+Nutrition Tracker was created using:
 
----
+* Apple Shortcuts
+* Apple Health
+* Open Food Facts
+* JSON
+* Optional AI integration
 
-## Thanks
 
-Thanks for using the shortcut and hopefully it makes nutrition tracking a little less annoying.
+*Attentive raders might have noticed that I used Chat GPT for big parts of the README - I'm sorry for that, but I was too lazy to type such a long text. If Chat GPT made any mistakes let me know too*
 
-If you find a bug or have an idea for a new feature, feel free to leave a comment on the RoutineHub page or contact me through one of my pinned networks.
 
-If you build something cool around the Nutrition Tracker JSON format, I'd also be interested in seeing it.
+Creator
+
+* GitHub: Scbhv
+* RoutineHub: @simon0907
+* Reddit: LongjumpingTomato946
+* Buy Me a Coffee: simon0907
+
+Older RoutineHub releases may also be associated with:
+
+* Sionic
+
+Add your preferred profile links here when publishing the repository.
+
+⸻
+
+25. Disclaimer
+
+Nutrition Tracker is provided as a nutrition tracking and automation tool.
+
+Nutrition information obtained from:
+
+* AI,
+* Open Food Facts,
+* third-party databases,
+* user-entered data,
+
+may be incomplete or inaccurate.
+
+For packaged foods, the manufacturer’s current nutrition label should generally be preferred when accurate nutritional information is important.
+
+Nutrition Tracker is not a medical device and is not intended to diagnose, treat, prevent, or manage medical conditions.
+
+
+⸻
+
+Thanks for using Nutrition Tracker!
