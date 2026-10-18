@@ -1,41 +1,79 @@
-**Nutrition Tracker**
+# Nutrition Tracker
+
+Nutrition Tracker is an Apple Shortcut that gets detailed nutrition data into Apple Health, fast, reusable and independent of a single data source. No account, no ads, no subscription.
+
+https://routinehub.co/shortcut/21541/
+
+**Works best with two of my other Shortcuts:**
+
+- https://routinehub.co/shortcut/24903/
+- https://routinehub.co/shortcut/26329/
+
+Check them out. READMEs for them might follow soon.
+
+## Why this exists
+
+Plenty of apps and Shortcuts can log food, but each one has a catch:
+
+- **MyFitnessPal** is free, but the barcode scanner and other features sit behind a paywall (Premium around 9.99 € per month).
+- **Yazio** is free to start, but many features are locked.
+- **Lose It!** is free, but limited, and it nags you to upgrade.
+- **Cronometer** is detailed, but the free version is limited and needs an account.
+- **Lifesum** is free, but limited.
+- **[Other Shortcut name]** is free and editable, but it only tracks the typical macros (no fatty acids or other often-missed nutrients), its barcode scan is limited, and its last update was in 2024.
+
+**This Shortcut:** 1.99 € once, or 5.99 € in a pack with other Shortcuts.
+
+## Add food with
+
+- 📷 Barcode scan
+- ✍️ Manual input
+- 🤖 AI (text or photo)
+- 💾 Saved JSON files
+
+## Features
+
+- 🍎 Every nutrient Apple Health supports: macros, micros, fatty acids and the often-missed ones
+- 💧 Water, creatine and any other substance you want to add later
+- 🧮 Serving size adjustable to several decimal places, scaled before it goes to Health
+- 📁 **Open data folder.** Everything is stored in one folder in your iCloud (or locally) as clearly structured, easily editable JSON. You can see exactly what is saved and change it yourself.
+- ✈️ Runs fully local and offline. Barcode and AI lookups are optional, so you can use the Shortcut without ever sending anything out.
+- 🔒 **Your health data stays with you.** Only the barcode number, the food name or a photo of the food leaves your device, and only if you choose a lookup, to fetch the nutrition values. No nutrition values, portion sizes or other health data are ever sent out. Values only come in.
+- 🛠️ It's a Shortcut, so you can edit every step
+
+## Comparison
+
+| | **This Shortcut** | [Other Shortcut] | MyFitnessPal | Yazio | Lose It! | Cronometer | Lifesum |
+|---|---|---|---|---|---|---|---|
+| Price | 1.99 € once | Free | Subscription | Subscription | Subscription | Subscription | Subscription |
+| No account | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Nutrients | All Apple Health supports, plus additional ones | common Macros only | | ? | ? | ? | ? |
+| Barcode scan | ✅ | Limited | 〃 | 〃 | 〃 | 〃 | 〃 |
+| Water, creatine, custom nutrients | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌|
+| Serving size to several decimals | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| partial offline use | ✅ | restricted | 〃 | 〃 | 〃 | ? | ? |
+| Up to date | ✅ | ❌ (last update 2024) | ✅ | ✅ | ✅| ✅ | ✅|
+| Data folder you can open and edit | ✅ clear JSON structure | ⚠️ less clear | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Editable | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 
-*https://routinehub.co/shortcut/21541/*
 
+## Privacy
 
-Your nutrition tracker is built directly into Apple Shortcuts and Apple Health.
+Lookups are optional. Without them, nothing leaves your device.
 
-Nutrition Tracker is an Apple Shortcut designed to make detailed nutrition tracking in Apple Health faster, reusable, and independent of a single data source.
+| What | Leaves your device? |
+|---|---|
+| Barcode number | Only if you use the barcode lookup |
+| Food name (text input) | Only if you use the AI lookup |
+| Photo of the food (photo input) | Only if you use the AI lookup |
+| Nutrition values | No, they only come in |
+| Portion sizes | No |
+| Water, creatine and other tracked data | No |
+| Your stored JSON files | No, only local or in your iCloud |
 
+Tip: when using the photo input, photograph only the food.
 
-
-*This shortcut works best with two my shorcuts:*
-
-https://routinehub.co/shortcut/24903/
-
-*and*
-
-
-https://routinehub.co/shortcut/26329/
-
-*check them out. README to them might drop soon too.*
-
-
-
-
-
-
-
-
-**Nutrient tracker shortcut**
-
-Food can currently be added using:
-
-* 📷 Barcode Scan
-* ✍️ Manual Input
-* 🤖 AI
-* 💾 Saved JSON files
 
 Nutrition Tracker is built around one important principle:
 
