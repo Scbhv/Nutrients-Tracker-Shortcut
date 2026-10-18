@@ -69,7 +69,7 @@ Lookups are optional. Without them, nothing leaves your device.
 | Photo of the food (photo input) | Only if you use the AI lookup |
 | Nutrition values | No, they only come in |
 | Portion sizes | No |
-| Water, creatine and other tracked data | No |
+| other private data | No |
 | Your stored JSON files | No, only local or in your iCloud |
 
 Tip: when using the photo input, photograph only the food.
