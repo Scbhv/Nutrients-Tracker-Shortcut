@@ -20,7 +20,7 @@ Plenty of apps and Shortcuts can log food, but each one has a catch:
 - **Lose It!** is free, but limited, and it nags you to upgrade.
 - **Cronometer** is detailed, but the free version is limited and needs an account.
 - **Lifesum** is free, but limited.
-- **[Other Shortcut name]** is free and editable, but it only tracks the typical macros (no fatty acids or other often-missed nutrients), its barcode scan is limited, and its last update was in 2024.
+- **Other Shortcuts** are free and editable, but only tracthe typical macros (no fatty acids or other often-missed nutrients).
 
 **This Shortcut:** 1.99 € once, or 5.99 € in a pack with other Shortcuts.
 
@@ -43,7 +43,7 @@ Plenty of apps and Shortcuts can log food, but each one has a catch:
 
 ## Comparison
 
-| | **This Shortcut** | [Other Shortcut] | MyFitnessPal | Yazio | Lose It! | Cronometer | Lifesum |
+| | **This Shortcut** | Other Shortcuts | MyFitnessPal | Yazio | Lose It! | Cronometer | Lifesum |
 |---|---|---|---|---|---|---|---|
 | Price | 1.99 $ once | Free |  9,99$/ month | Subscription | Subscription | 8,99$/month | 9,99$/month |
 |Account | not needed | not needed | mandatory | mandatory | mandatory |mandatory| mandatory |
