@@ -49,7 +49,7 @@ Plenty of apps and Shortcuts can log food, but each one has a catch:
 |Account | not needed | not needed | mandatory | mandatory | mandatory |mandatory| mandatory |
 | All apple health Nutrients plus addotional ones  | ✅ | many nutrients | basic | basic | basic | all apple health nutrients | many nutrients|
 | Barcode scan | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Manual input| | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Manual input| ✅| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Ai lookup| ✅| ❌ | ✅ | ❌ | ✅ | ✅ | ✅ |
 | Transperent Ai lookup - so that you can change model promt and so on | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌|
 | Serving size to several decimals possible | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
