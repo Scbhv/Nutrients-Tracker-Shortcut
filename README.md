@@ -45,24 +45,26 @@ Plenty of apps and Shortcuts can log food, but each one has a catch:
 
 | | **This Shortcut** | [Other Shortcut] | MyFitnessPal | Yazio | Lose It! | Cronometer | Lifesum |
 |---|---|---|---|---|---|---|---|
-| Price | 1.99 € once | Free | Subscription | Subscription | Subscription | Subscription | Subscription |
-| No account | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Nutrients | All Apple Health supports, plus additional ones | common Macros only | | ? | ? | ? | ? |
-| Barcode scan | ✅ | Limited | 〃 | 〃 | 〃 | 〃 | 〃 |
-| Water, creatine, custom nutrients | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌|
-| Serving size to several decimals | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| partial offline use | ✅ | restricted | 〃 | 〃 | 〃 | ? | ? |
+| Price | 1.99 $ once | Free |  9,99$/ month | Subscription | Subscription | 8,99$/month | 9,99$/month |
+|Account | not needed | not needed | mandatory | mandatory | mandatory |mandatory| mandatory |
+| All apple health Nutrients plus addotional ones  | ✅ | many nutrients | basic | basic | basic | all apple health nutrients | many nutrients|
+| Barcode scan | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Manual input| | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Ai lookup| ✅| ❌ | ✅ | ❌ | ✅ | ✅ | ✅ |
+| Transperent Ai lookup - so that you can change model promt and so on | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌|
+| Serving size to several decimals possible | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Offline use | offline libary, but no barcode and ai lookup of course | restricted | restricted | restricted | restricted | restricted | restricted |
 | Up to date | ✅ | ❌ (last update 2024) | ✅ | ✅ | ✅| ✅ | ✅|
 | Data folder you can open and edit | ✅ clear JSON structure | ⚠️ less clear | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Editable | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-
+| Editable code | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| High privacy *1 | ✅ | ✅ | US servers | ❌ | ❌ | ❌ | ❌ |
 
 
 ## Privacy
 
 Lookups are optional. Without them, nothing leaves your device.
 
-| What | Leaves your device? |
+*1 | What | Leaves your device? |
 |---|---|
 | Barcode number | Only if you use the barcode lookup |
 | Food name (text input) | Only if you use the AI lookup |
