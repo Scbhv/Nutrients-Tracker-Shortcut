@@ -64,7 +64,9 @@ Plenty of apps and Shortcuts can log food, but each one has a catch:
 
 Lookups are optional. Without them, nothing leaves your device.
 
-*1 | What | Leaves your device? |
+*1 
+
+| What | Leaves your device? |
 |---|---|
 | Barcode number | Only if you use the barcode lookup |
 | Food name (text input) | Only if you use the AI lookup |
